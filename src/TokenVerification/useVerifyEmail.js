@@ -1,19 +1,15 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { verifyEmail } from '../TokenVerification/authService';
 
 export const useVerifyEmail = () => {
-  const { token: routeToken } = useParams();
-  const [searchParams] = useSearchParams();
+  const { token } = useParams(); // Solo obtenemos el token de la ruta
   const navigate = useNavigate();
   const [state, setState] = useState({
     loading: true,
     error: null,
     success: false
   });
-
-  // Obtener el token (prioriza query param sobre route param)
-  const token = searchParams.get('token') || routeToken;
 
   const verify = async () => {
     try {
@@ -30,7 +26,7 @@ export const useVerifyEmail = () => {
         success: true
       });
 
-      // Redirigir después de éxito (opcional)
+      // Redirigir después de 3 segundos
       setTimeout(() => navigate('/login', { replace: true }), 3000);
     } catch (err) {
       setState({
@@ -42,7 +38,6 @@ export const useVerifyEmail = () => {
   };
 
   useEffect(() => {
-    // Verificar solo si tenemos token
     if (token) {
       verify();
     } else {
@@ -52,7 +47,7 @@ export const useVerifyEmail = () => {
         success: false
       });
     }
-  }, [token]); // Solo se ejecuta cuando token cambia
+  }, [token]);
 
   return state;
 };
