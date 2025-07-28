@@ -244,6 +244,7 @@ const BadgesAdmin = () => {
             <Grid item xs={12} sm={6} md={4} key={badge.id}>
               <Card sx={{ 
                 height: '100%',
+                width: 279,
                 display: 'flex',
                 flexDirection: 'column',
                 transition: 'all 0.3s ease',

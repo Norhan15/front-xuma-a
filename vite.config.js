@@ -14,7 +14,7 @@ export default defineConfig({
       },
       // Proxy para el servidor de sugerencias de texto
       '/suggestions': {
-        target: 'https://e98dbbc719a5.ngrok-free.app',
+        target: 'https://1ee0c4ce8655.ngrok-free.app/',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/suggestions/, '/api') // Reemplazar /suggestions con /api

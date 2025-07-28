@@ -26,6 +26,7 @@ import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
 import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
 import LeaderboardIcon from '@mui/icons-material/Leaderboard';
 import CircularProgress from '@mui/material/CircularProgress';
+import QueryStatsIcon from '@mui/icons-material/QueryStats';
 import { useNavigate } from 'react-router-dom';
 import { getUserProfile } from '../../services/userService';
 import { AuthContext } from '../../services/Auth/AuthContext';
@@ -49,7 +50,7 @@ const categories = [
   { name: 'Ranking de Desafíos', icon: <MilitaryTechIcon />, path: '/rankings/challenges/global' },
   { name: 'Ranking de Trivias', icon: <QuizIcon />, path: '/rankings/quizzes' },
   { name: 'Administración de Insignias', icon: <WorkspacePremiumIcon />, path: '/badges' },
-  { name: 'Análisis de Churn', icon: <InfoIcon />, path: '/analytics' }
+  { name: 'Análisis de Churn', icon: <QueryStatsIcon />, path: '/analytics' }
 ];
 
 const UserAvatar = ({ src, alt }) => {
