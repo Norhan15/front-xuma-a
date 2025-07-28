@@ -1,5 +1,4 @@
-import React, { useState, useContext } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -7,12 +6,15 @@ import {
   Button,
   Typography,
   InputAdornment,
-  IconButton
+  IconButton,
+  CircularProgress,
+  FormHelperText,
+  Snackbar,
+  Alert
 } from '@mui/material';
 import { Visibility, VisibilityOff, Recycling } from '@mui/icons-material';
-
-// Import the AuthContext
-import { AuthContext } from '../../services/Auth/AuthContext';
+import logoXumaa from '../../assets/logo_xumaa.jpg';
+import useLogin from './LoginService';
 
 const LoginView = () => {
   const [showPassword, setShowPassword] = useState(false);
@@ -20,10 +22,22 @@ const LoginView = () => {
     email: '',
     password: ''
   });
-  const [error, setError] = useState('');
 
-  const navigate = useNavigate();
-  const { login } = useContext(AuthContext);
+  const { handleLogin, loading, error, fieldErrors } = useLogin();
+  
+  // Estado local para el error Snackbar
+  const [showError, setShowError] = useState(false);
+
+  // Efecto para mostrar errores
+  useEffect(() => {
+    if (error && error.open) {
+      setShowError(true);
+    }
+  }, [error]);
+
+  const handleCloseError = () => {
+    setShowError(false);
+  };
 
   const handleClickShowPassword = () => setShowPassword(!showPassword);
 
@@ -34,57 +48,14 @@ const LoginView = () => {
     });
   };
 
- const handleSubmit = async (event) => {
-  event.preventDefault();
-  setError('');
-
-  try {
-    const response = await fetch('https://auth-service-production-e333.up.railway.app/api/auth/login', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify(formData),
-    });
-
-    const result = await response.json();
-
-    if (result.success) {
-      const userRole = result.data.user.role;
-      if (userRole === 'administrator' || userRole === 'moderator') {
-        // Estructura correcta del objeto user con userId incluido
-        const userData = {
-          ...result.data.user,
-          userId: result.data.userId // Añade el userId al objeto user
-        };
-
-        login(result.data.accessToken, userData);
-
-        if (userRole === 'administrator') {
-          navigate('/home');
-        } else if (userRole === 'moderator') {
-          navigate('/media');
-        }
-      } else {
-        setError('Acceso denegado: Tu rol no tiene permisos para iniciar sesión.');
-      }
-    } else {
-      setError(result.message || 'Error al iniciar sesión. Por favor, verifica tus credenciales.');
-    }
-  } catch (err) {
-    console.error('Login error:', err);
-    setError('No se pudo conectar con el servidor. Inténtalo de nuevo más tarde.');
-  }
-};
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    await handleLogin(formData);
+  };
 
   return (
-    <Grid
-      container
-      direction={{ xs: 'column', md: 'row' }}
-      height="100vh"
-      sx={{ overflow: 'hidden', position: 'relative' }}
-    >
-      {/* Decorative circles */}
+    <Grid container direction={{ xs: 'column', md: 'row' }} height="100vh" sx={{ overflow: 'hidden', position: 'relative' }}>
+      {/* Elementos decorativos de fondo */}
       <Box
         sx={{
           position: 'absolute',
@@ -110,7 +81,7 @@ const LoginView = () => {
         }}
       />
 
-      {/* Logo centered only on mobile */}
+      {/* Logo móvil */}
       <Box
         sx={{
           display: { xs: 'flex', md: 'none' },
@@ -120,14 +91,14 @@ const LoginView = () => {
         }}
       >
         <img
-          src="src/assets/logo_xumaa.jpg"
-          alt="XUMAA Logo"
+          src={logoXumaa}
+          alt="XUMA'A Logo"
           style={{ maxWidth: '250px', height: 'auto' }}
           onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/250x150/CCCCCC/000000?text=Logo+Not+Found"; }}
         />
       </Box>
 
-      {/* Left column with logo - desktop */}
+      {/* Columna del logo para desktop */}
       <Grid
         item
         xs={0}
@@ -140,15 +111,15 @@ const LoginView = () => {
       >
         <Box sx={{ textAlign: 'center', pr: 5 }}>
           <img
-            src="src/assets/logo_xumaa.jpg"
-            alt="XUMA´A Logo"
+            src={logoXumaa}
+            alt="XUMA'A Logo"
             style={{ maxWidth: '700px', height: 'auto' }}
             onError={(e) => { e.target.onerror = null; e.target.src = "https://placehold.co/700x400/CCCCCC/000000?text=Logo+Not+Found"; }}
           />
         </Box>
       </Grid>
 
-      {/* Right column with form */}
+      {/* Columna del formulario */}
       <Grid
         item
         xs={12}
@@ -170,6 +141,7 @@ const LoginView = () => {
             zIndex: 1,
             position: 'relative',
             backgroundColor: 'white',
+            boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
           }}
         >
           <Typography
@@ -196,15 +168,22 @@ const LoginView = () => {
               variant="outlined"
               value={formData.email}
               onChange={handleInputChange('email')}
-              placeholder="Ingresa tu correo electrónico"
+              placeholder="ejemplo@dominio.com"
+              error={fieldErrors.email.error}
+              disabled={loading}
               sx={{
-                mb: 3,
+                mb: 1,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
                   backgroundColor: '#fff'
                 }
               }}
             />
+            {fieldErrors.email.error && (
+              <FormHelperText error sx={{ mb: 2, mt: -1 }}>
+                {fieldErrors.email.message}
+              </FormHelperText>
+            )}
 
             <Typography variant="body2" sx={{ mb: 1, fontWeight: 500, color: '#555' }}>
               Contraseña
@@ -216,8 +195,10 @@ const LoginView = () => {
               value={formData.password}
               onChange={handleInputChange('password')}
               placeholder="Ingresa tu contraseña"
+              error={fieldErrors.password.error}
+              disabled={loading}
               sx={{
-                mb: 4,
+                mb: 1,
                 '& .MuiOutlinedInput-root': {
                   borderRadius: 2,
                   backgroundColor: '#fff'
@@ -226,37 +207,54 @@ const LoginView = () => {
               InputProps={{
                 endAdornment: (
                   <InputAdornment position="end">
-                    <IconButton onClick={handleClickShowPassword} edge="end" size="small">
+                    <IconButton 
+                      onClick={handleClickShowPassword} 
+                      edge="end" 
+                      size="small"
+                      disabled={loading}
+                    >
                       {showPassword ? <VisibilityOff /> : <Visibility />}
                     </IconButton>
                   </InputAdornment>
                 )
               }}
             />
-
-            {error && (
-              <Typography color="error" sx={{ mb: 2, textAlign: 'center' }}>
-                {error}
-              </Typography>
+            {fieldErrors.password.error && (
+              <FormHelperText error sx={{ mb: 2, mt: -1 }}>
+                {fieldErrors.password.message}
+              </FormHelperText>
             )}
 
             <Button
               type="submit"
               fullWidth
               variant="contained"
+              disabled={loading}
               sx={{
                 py: 1.5,
                 borderRadius: 2,
-                backgroundColor: '#4CAF50',
+                backgroundColor: loading ? '#e0e0e0' : '#4CAF50',
                 fontSize: '1rem',
                 fontWeight: 600,
                 textTransform: 'none',
-                '&:hover': {
-                  backgroundColor: '#45a049'
+                color: loading ? '#999' : 'white',
+                '&:hover': { 
+                  backgroundColor: loading ? '#e0e0e0' : '#45a049' 
+                },
+                '&:disabled': { 
+                  backgroundColor: '#e0e0e0',
+                  color: '#999'
                 }
               }}
             >
-              Iniciar Sesión
+              {loading ? (
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <CircularProgress size={20} sx={{ color: '#999' }} />
+                  Verificando...
+                </Box>
+              ) : (
+                'Iniciar Sesión'
+              )}
             </Button>
           </Box>
 
@@ -280,6 +278,22 @@ const LoginView = () => {
           </Box>
         </Box>
       </Grid>
+
+      {/* Sistema de errores personalizado */}
+      <Snackbar
+        open={showError && error && error.open}
+        autoHideDuration={6000}
+        onClose={handleCloseError}
+        anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+      >
+        <Alert
+          onClose={handleCloseError}
+          severity={error?.severity || 'error'}
+          sx={{ width: '100%' }}
+        >
+          {error?.message || 'Error desconocido'}
+        </Alert>
+      </Snackbar>
     </Grid>
   );
 };

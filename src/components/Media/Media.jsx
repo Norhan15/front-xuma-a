@@ -102,7 +102,7 @@ const SeleccionarTipoArchivo = () => {
             fontSize: { xs: '1.8rem', sm: '2.2rem' }
           }}
         >
-          Aprendamos
+          Media
         </Typography>
         <IconButton
           sx={{
