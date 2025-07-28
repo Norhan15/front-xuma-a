@@ -26,8 +26,6 @@ export const useVerifyEmail = () => {
         success: true
       });
 
-      // Redirigir después de 3 segundos
-      setTimeout(() => navigate('/login', { replace: true }), 3000);
     } catch (err) {
       setState({
         loading: false,
