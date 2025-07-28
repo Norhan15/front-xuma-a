@@ -12,7 +12,6 @@ export const useVerifyEmail = () => {
 
   // Obtener el token desde query params o desde la ruta
   const token = searchParams.get('token') || routeToken;
-  console.log("Token obtenido:", token);
 
   const verify = async () => {
     try {
