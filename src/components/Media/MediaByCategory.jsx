@@ -281,10 +281,10 @@ const MediaByCategory = () => {
               ))}
             </Grid>
 
-            {(pagination.total > pagination.limit || media.length === pagination.limit) && (
+            {pagination.total > pagination.limit && (
               <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
                 <Pagination
-                  count={Math.ceil(Math.max(pagination.total, media.length) / pagination.limit)}
+                  count={Math.ceil(pagination.total / pagination.limit)}
                   page={pagination.page}
                   onChange={handlePageChange}
                   color="primary"
