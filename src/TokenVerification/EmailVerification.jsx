@@ -101,7 +101,7 @@ const EmailVerification = () => {
                 fontSize: { xs: '1.6rem', sm: '2rem' }
               }}
             >
-              ¡Verificación exitosa!
+              ¡Felicidades!
             </Typography>
             <Typography 
               variant="body1"
@@ -113,24 +113,8 @@ const EmailVerification = () => {
                 fontSize: { xs: '0.9rem', sm: '1rem' }
               }}
             >
-              Tu dirección de correo ha sido verificada correctamente.
+              Ya eres parte de Xuma'a. Tu dirección de correo ha sido verificada correctamente.
             </Typography>
-            <Button
-              fullWidth
-              variant="contained"
-              size="large"
-              color="success"
-              onClick={() => navigate('/login')}
-              sx={{
-                mt: 1,
-                py: 1.25,
-                fontSize: { xs: '0.9rem', sm: '1rem' },
-                maxWidth: '280px',
-                mx: 'auto'
-              }}
-            >
-              Continuar al login
-            </Button>
           </Box>
         )}
 
