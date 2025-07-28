@@ -37,7 +37,7 @@ function App() {
           {/* Public routes */}
           <Route path="/login" element={<LoginPage />} />
           <Route path="/" element={<LoginPage />} />
-          <Route path="/verify-email/:token" element={<EmailVerification />} />
+          <Route path="/confirm-email/:token" element={<EmailVerification />} />
 
           {/* Protected routes with sidebar layout */}
           <Route element={<ProtectedRoute allowedRoles={['administrator', 'moderator']} />}>
