@@ -1,13 +1,17 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
+import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import { verifyEmail } from '../TokenVerification/authService';
 
 export const useVerifyEmail = () => {
-  const { token } = useParams();
+  const { token: routeToken } = useParams(); // Token desde la ruta (/confirm-email/:token)
+  const [searchParams] = useSearchParams(); // Token desde query params (?token=...)
   const navigate = useNavigate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(false);
+
+  // Obtener el token desde query params o desde la ruta
+  const token = searchParams.get('token') || routeToken;
 
   const verify = async () => {
     try {
