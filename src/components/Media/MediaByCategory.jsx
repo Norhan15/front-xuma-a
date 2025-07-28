@@ -22,13 +22,11 @@ import ImageIcon from '@mui/icons-material/Image';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AudiotrackIcon from '@mui/icons-material/Audiotrack';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
-import ContentCopyIcon from '@mui/icons-material/ContentCopy'; // Añade este import
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
 import { useParams } from 'react-router-dom';
 import { useMediaByCategory } from './useMediaByCategory';
 import { DeleteDialog } from './MediaModal/DeleteDialog';
-import { UploadDialog } from './MediaModal/UploadDialog'; // Ensure this path is correct
-
-
+import { UploadDialog } from './MediaModal/UploadDialog';
 
 const MediaByCategory = () => {
   const { category } = useParams();
@@ -52,7 +50,7 @@ const MediaByCategory = () => {
     handleCloseUploadDialog,
     handleCopyUrl,
     fetchMedia,
-    userId // Get userId from the hook
+    userId
   } = useMediaByCategory(category);
 
   const categoryData = {
@@ -151,17 +149,17 @@ const MediaByCategory = () => {
               {currentCategory.title}
             </Typography>
             <Chip
-            label={
-              loading ? 'Cargando...' : 
-              `${pagination.total} ${pagination.total === 1 ? 'archivo' : 'archivos'}`
-            }
-            size="small"
-            sx={{
-              backgroundColor: '#e2f3e5',
-              color: '#399649',
-              fontWeight: 500
-            }}
-          />
+              label={
+                loading ? 'Cargando...' : 
+                `${pagination.total} ${pagination.total === 1 ? 'archivo' : 'archivos'}`
+              }
+              size="small"
+              sx={{
+                backgroundColor: '#e2f3e5',
+                color: '#399649',
+                fontWeight: 500
+              }}
+            />
           </Box>
 
           <Button
@@ -175,7 +173,7 @@ const MediaByCategory = () => {
         </Box>
 
         {/* Grid de archivos */}
-        {media.length === 0 && !loading ? ( // Only show "No hay archivos" if not loading and empty
+        {media.length === 0 && !loading ? (
           <Typography sx={{ color: '#64748b', mt: 4, textAlign: 'center' }}>
             No hay archivos en esta categoría
           </Typography>
@@ -183,9 +181,10 @@ const MediaByCategory = () => {
           <>
             <Grid container spacing={3} sx={{ mb: 4 }}>
               {media.map((item) => (
-                <Grid item xs={12} sm={6} md={4} key={item.id}>
+                <Grid item xs={12} sm={6} md={4} lg={3} key={item.id}>
                   <Card sx={{
-                    height: '100%',
+                    width: '260px',
+                    height: '180px',
                     display: 'flex',
                     flexDirection: 'column',
                     borderRadius: '12px',
@@ -195,14 +194,32 @@ const MediaByCategory = () => {
                       transform: 'translateY(-4px)',
                       boxShadow: '0 8px 24px rgba(0,0,0,0.12)'
                     },
-                    borderLeft: `4px solid ${currentCategory.color}`
+                    borderLeft: `4px solid ${currentCategory.color}`,
+                    overflow: 'hidden'
                   }}>
-                    <CardContent sx={{ flexGrow: 1 }}>
-                      <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                        <Typography variant="h6" sx={{
+                    <CardContent sx={{ 
+                      flexGrow: 1,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      p: 2,
+                      '&:last-child': { pb: 2 }
+                    }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        justifyContent: 'space-between',
+                        alignItems: 'flex-start',
+                        mb: 1
+                      }}>
+                        <Typography variant="subtitle1" sx={{
                           fontWeight: 600,
-                          mb: 1,
-                          wordBreak: 'break-word'
+                          wordBreak: 'break-word',
+                          display: '-webkit-box',
+                          WebkitLineClamp: 2,
+                          WebkitBoxOrient: 'vertical',
+                          overflow: 'hidden',
+                          textOverflow: 'ellipsis',
+                          flexGrow: 1,
+                          mr: 1
                         }}>
                           {item.originalName}
                         </Typography>
@@ -210,12 +227,19 @@ const MediaByCategory = () => {
                           aria-label="more"
                           onClick={(e) => handleMenuOpen(e, item)}
                           size="small"
+                          sx={{ ml: 'auto' }}
                         >
-                          <MoreVertIcon />
+                          <MoreVertIcon fontSize="small" />
                         </IconButton>
                       </Box>
 
-                      <Box sx={{ display: 'flex', gap: 1, mb: 1, flexWrap: 'wrap' }}>
+                      <Box sx={{ 
+                        display: 'flex', 
+                        gap: 1, 
+                        mb: 1, 
+                        flexWrap: 'wrap',
+                        overflow: 'hidden'
+                      }}>
                         <Chip
                           label={item.fileType}
                           size="small"
@@ -237,7 +261,9 @@ const MediaByCategory = () => {
                         <Typography variant="body2" sx={{
                           color: '#399649',
                           wordBreak: 'break-all',
-                          mt: 1
+                          mt: 'auto',
+                          textAlign: 'center',
+                          pt: 1
                         }}>
                           <a
                             href={item.publicUrl}
@@ -255,73 +281,88 @@ const MediaByCategory = () => {
               ))}
             </Grid>
 
-            {pagination.total > pagination.limit && (
-              <Pagination
-                count={Math.ceil(pagination.total / pagination.limit)}
-                page={pagination.page}
-                onChange={handlePageChange}
-                color="primary"
-                sx={{ display: 'flex', justifyContent: 'center' }}
-              />
+            {(pagination.total > pagination.limit || media.length === pagination.limit) && (
+              <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4 }}>
+                <Pagination
+                  count={Math.ceil(Math.max(pagination.total, media.length) / pagination.limit)}
+                  page={pagination.page}
+                  onChange={handlePageChange}
+                  color="primary"
+                  shape="rounded"
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      fontSize: '0.875rem',
+                      minWidth: '32px',
+                      height: '32px'
+                    },
+                    '& .Mui-selected': {
+                      backgroundColor: currentCategory.color,
+                      color: '#fff',
+                      '&:hover': {
+                        backgroundColor: currentCategory.color
+                      }
+                    }
+                  }}
+                />
+              </Box>
             )}
           </>
         )}
 
         {/* Menú de acciones */}
-              <Menu
+        <Menu
           anchorEl={anchorEl}
           open={Boolean(anchorEl)}
           onClose={handleMenuClose}
           sx={{
             '& .MuiPaper-root': {
               borderRadius: '12px',
-              boxShadow: '0 4px 20px rgba(0,0,0,0.1)'
+              boxShadow: '0 4px 20px rgba(0,0,0,0.1)',
+              minWidth: '180px'
             }
           }}
         >
-        <MenuItem 
-          onClick={handleCopyUrl}
-          disabled={!currentMedia?.publicUrl}
-          sx={{
-            '&:hover': {
-              backgroundColor: '#f5f5f5'
-            }
-          }}
-        >
-          <ContentCopyIcon sx={{ mr: 1, fontSize: '20px' }} />
-          <Typography variant="body2">Copiar URL</Typography>
-        </MenuItem>
-        <MenuItem 
-          onClick={() => {
-            if (currentMedia?.id) {
-              navigator.clipboard.writeText(currentMedia.id);
-              // Opcional: mostrar mensaje de confirmación
-              console.log('ID copiado:', currentMedia.id);
-            }
-            handleMenuClose();
-          }}
-          disabled={!currentMedia?.id}
-          sx={{
-            '&:hover': {
-              backgroundColor: '#f5f5f5'
-            }
-          }}
-        >
-          <ContentCopyIcon sx={{ mr: 1, fontSize: '20px' }} />
-          <Typography variant="body2">Copiar ID</Typography>
-        </MenuItem>
-        <MenuItem 
-          onClick={handleDeleteClick}
-          sx={{
-            '&:hover': {
-              backgroundColor: '#fff0f0'
-            }
-          }}
-        >
-          <DeleteIcon sx={{ mr: 1, color: '#ef4444', fontSize: '20px' }} />
-          <Typography variant="body2" color="error">Eliminar</Typography>
-        </MenuItem>
-      </Menu>
+          <MenuItem 
+            onClick={handleCopyUrl}
+            disabled={!currentMedia?.publicUrl}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#f5f5f5'
+              }
+            }}
+          >
+            <ContentCopyIcon sx={{ mr: 1, fontSize: '20px' }} />
+            <Typography variant="body2">Copiar URL</Typography>
+          </MenuItem>
+          <MenuItem 
+            onClick={() => {
+              if (currentMedia?.id) {
+                navigator.clipboard.writeText(currentMedia.id);
+              }
+              handleMenuClose();
+            }}
+            disabled={!currentMedia?.id}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#f5f5f5'
+              }
+            }}
+          >
+            <ContentCopyIcon sx={{ mr: 1, fontSize: '20px' }} />
+            <Typography variant="body2">Copiar ID</Typography>
+          </MenuItem>
+          <MenuItem 
+            onClick={handleDeleteClick}
+            sx={{
+              '&:hover': {
+                backgroundColor: '#fff0f0'
+              }
+            }}
+          >
+            <DeleteIcon sx={{ mr: 1, color: '#ef4444', fontSize: '20px' }} />
+            <Typography variant="body2" color="error">Eliminar</Typography>
+          </MenuItem>
+        </Menu>
 
         {/* Mensajes de notificación */}
         {error && (
@@ -360,21 +401,20 @@ const MediaByCategory = () => {
           </Box>
         )}
 
-
         {/* Diálogos */}
-       <DeleteDialog
-        open={openDeleteDialog}
-        onClose={handleDeleteDialogClose}
-        onConfirm={handleDeleteConfirm} // Ya no necesitas pasar user.userId aquí
-        fileName={currentMedia?.originalName}
-      />
+        <DeleteDialog
+          open={openDeleteDialog}
+          onClose={handleDeleteDialogClose}
+          onConfirm={handleDeleteConfirm}
+          fileName={currentMedia?.originalName}
+        />
 
         <UploadDialog
           open={openUploadDialog}
           onClose={handleCloseUploadDialog}
-          category={category}  // ← categoría de la URL
+          category={category}
           onUploadSuccess={fetchMedia}
-          userId={userId}      // ← del hook useMediaByCategory
+          userId={userId}
         />
       </Box>
     </Box>

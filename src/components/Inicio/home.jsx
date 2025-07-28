@@ -130,7 +130,7 @@ const Home = () => {
               color: '#94a3b8',
               fontSize: { xs: '0.9rem', sm: '1rem' }
             }}>
-              XUMAA te ofrece trivias interactivas, artículos educativos, desafíos ecológicos 
+              XUMA'A te ofrece trivias interactivas, artículos educativos, desafíos ecológicos 
               y mucho más para que aprendas sobre cómo cuidar nuestro planeta de manera divertida.
             </Typography>
 

@@ -7,14 +7,14 @@ export default defineConfig({
     proxy: {
       // Proxy para el servidor de análisis (ChurnAnalysisVisualizations)
       '/api': {
-        target: 'http://98.86.127.137:8000',
+        target: 'https://genetic-motivated-screensavers-descriptions.trycloudflare.com',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/api/, '/api') // No eliminar /api
       },
       // Proxy para el servidor de sugerencias de texto
       '/suggestions': {
-        target: 'http://34.194.226.49:5000',
+        target: 'https://513e95d92e84.ngrok-free.app/',
         changeOrigin: true,
         secure: false,
         rewrite: (path) => path.replace(/^\/suggestions/, '/api') // Reemplazar /suggestions con /api

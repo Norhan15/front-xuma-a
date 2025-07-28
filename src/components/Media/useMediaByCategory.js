@@ -10,7 +10,7 @@ export const useMediaByCategory = (category) => {
   const [successMessage, setSuccessMessage] = useState(null);
   const [pagination, setPagination] = useState({
     page: 1,
-    limit: 9,
+    limit: 6,
     total: 0
   });
   const [anchorEl, setAnchorEl] = useState(null);
@@ -26,9 +26,14 @@ export const useMediaByCategory = (category) => {
       console.log('API Response:', result); // Para depuración
       
       setMedia(result.items);
+      
+      // Si el total de la API es 0 pero hay elementos, significa que la API no está devolviendo el total correctamente
+      // En este caso, estimamos que hay más páginas si tenemos exactamente el límite de elementos
+      const estimatedTotal = result.total || (result.items.length === pagination.limit ? result.items.length + 1 : result.items.length);
+      
       setPagination(prev => ({
         ...prev,
-        total: result.total,
+        total: estimatedTotal,
         page: result.page,
         limit: result.limit
       }));
